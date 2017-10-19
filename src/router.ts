@@ -34,7 +34,7 @@ export class Router {
         return this.getRoute(key).isPresent();
     }
 
-    public add<T extends IControllerType>(key: string, controllerType: T) {
+    public add(key: string, controllerType: IControllerType) {
         if (this.hasRoute(key)) {
             throw new RouteRedefineError(key);
         }
