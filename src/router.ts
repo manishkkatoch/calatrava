@@ -6,15 +6,13 @@ export interface IControllerType {
     new(...args: any[]): IController;
 }
 
-type IControllerTypeRoute = Route<IControllerType>;
-
-class Route<IControllerType> {
+class Route {
     constructor(public key: string, public controller: IControllerType) { }
 }
 
 export class Router {
     private static instance: Router;
-    private routes: IControllerTypeRoute[];
+    private routes: Route[];
     private constructor() {
         this.routes = [];
     }
@@ -34,7 +32,7 @@ export class Router {
         return this.getRoute(key).isPresent();
     }
 
-    public add<T extends IControllerType>(key: string, controllerType: T) {
+    public add(key: string, controllerType: IControllerType) {
         if (this.hasRoute(key)) {
             throw new RouteRedefineError(key);
         }
@@ -47,7 +45,7 @@ export class Router {
             .map((route) => route.controller);
     }
 
-    private getRoute(forKey: string): Optional<IControllerTypeRoute> {
+    private getRoute(forKey: string): Optional<Route> {
         return Optional
             .ofNullable(this.routes.find((route) => route.key === forKey));
     }
