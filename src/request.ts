@@ -1,12 +1,24 @@
+import Optional from "optional.js";
 import { createController, IController } from "./controller";
 import { RouteNotFoundError } from "./errors";
-import { Router } from "./router";
+import Navigation from "./navigation";
+import { IControllerType, Router } from "./router";
 
-export const Request = (key: string): IController => {
-    const controllerType = Router.Instance.routeTo(key);
-    return controllerType
-            .map((c) => createController(c))
-            .orElse(() => {
-                throw new RouteNotFoundError(key);
-            });
+export const Request = (key: string): void => {
+
+    const getControllerForKey = (): Optional<IController> => {
+        const controllerType = Router.Instance.routeTo(key);
+
+        if ( !controllerType.isPresent() ) {
+            throw new RouteNotFoundError(key);
+        }
+        return controllerType.map((c) => createController(c));
+    };
+
+    const updateNavigationStack = (controller: IController) => {
+        Navigation.push(controller);
+    };
+
+    getControllerForKey()
+        .map(updateNavigationStack);
 };

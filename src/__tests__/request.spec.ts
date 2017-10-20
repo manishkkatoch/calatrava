@@ -1,5 +1,6 @@
 import { IController } from "../controller";
 import { RouteNotFoundError } from "../errors";
+import Navigation from "../navigation";
 import { Request } from "../request";
 import { Router } from "../router";
 import {} from "./jasmine.matcher";
@@ -7,15 +8,22 @@ import {} from "./jasmine.matcher";
 class TestController implements IController {}
 
 describe("Calatrava.Request", () => {
-    it("#call should return controller for a given key with route registered",
+    beforeEach(() => {
+        Router.Instance.clear();
+        Navigation.clear();
+    });
+
+    it("#call should update navigation for found route",
     () => {
         Router.Instance.add("key", TestController);
         const result = Request("key");
-        expect(result).toBeInstanceOf(TestController);
+        expect(Navigation.top()).toBeInstanceOf(TestController);
     });
 
-    it("#call should return instance of requested route controller", () => {
-        expect(Request("someController"))
-            .toThrowError(RouteNotFoundError);
+    it("#call should thow if no route for requested key", () => {
+        expect(() => {
+            Request("someController");
+        })
+        .toThrowError(RouteNotFoundError);
     });
 });
