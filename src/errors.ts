@@ -1,18 +1,12 @@
 export class RouteRedefineError extends Error {
 
-    private static makeMessage(key: string): string {
+    private static makeMessage = (key: string) => {
         return `route already defined for key ${key}`;
     }
 
-    public name: string;
-    public message: string;
-    public stack?: string;
-
     constructor(key: string) {
-       const message = RouteRedefineError.makeMessage(key);
-       super(message);
-       this.message = message;
-       this.name = "RouteRedefineError";
-       Object.setPrototypeOf(this, new.target.prototype);
+        super(RouteRedefineError.makeMessage(key));
+        Object.setPrototypeOf(this, new.target.prototype);
+        Error.captureStackTrace(this, this.constructor);
     }
 }
