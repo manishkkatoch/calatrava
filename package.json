@@ -10,7 +10,7 @@
     "clean": "rm -rf ./dist",
     "pretest": "npm run test:compile && npm run lint",
     "test:compile": "tsc --noEmit -p ./support",
-    "test": "jest --no-cache",
+    "test": "jest --no-cache --coverage",
     "lint": "tslint --project .",
     "lint:fix": "tslint --fix --project ."
   },
