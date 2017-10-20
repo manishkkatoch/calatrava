@@ -18,8 +18,6 @@ const toBeInstanceOf = (expectedType: any): jasmine.CustomMatcher => {
                 pass: isPositive,
                 message: () => report,
             };
-            // tslint:disable-next-line:no-console
-            console.log(result);
             return result;
         },
     };
