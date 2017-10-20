@@ -1,3 +1,6 @@
+// tslint:disable-next-line:no-reference
+/// <reference path="./jasmine.matcher.d.ts" />
+
 import { IController } from "../controller";
 import { default as Navigation, NavigationStack } from "../navigation";
 
@@ -22,7 +25,7 @@ describe("Calatrava.Navigation", () => {
         Navigation.push(twoController);
         expect(Navigation.count).toEqual(2);
     });
-    it("#back should be able to go back to earlier controller in stack", () =>{
+    it("#back should be able to go back to earlier controller in stack", () => {
         Navigation.push(oneController);
         Navigation.push(twoController);
         Navigation.back();
