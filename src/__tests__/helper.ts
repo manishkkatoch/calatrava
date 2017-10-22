@@ -1,4 +1,4 @@
-import { GenericCallBack } from '../events';
+import { GenericCallBack } from "../events";
 
 // assumes last argument is always the completion callback
 const getCompletionResolver = (args: any[]): GenericCallBack => {

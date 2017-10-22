@@ -19,21 +19,3 @@ export class FullMockController implements IController {
     public onPageRestart() { }
     public onPageVisible() { }
 }
-
-export class MockNativeView implements INativeView {
-
-    public bindAll(events: Map<string, (...args: any[]) => void>) {}
-    public finish() {}
-    public getValues(fields: string[], success: (data: string) => void, failure: (error: Error) => void) {}
-    public hide() {}
-    public render(viewModel: string, success: (data: boolean) => void, failure: (error: Error) => void) {}
-    public renderComponent(
-        name: string,
-        model: string,
-        success: (data: boolean) => void,
-        failure: (error: Error) => void) {}
-    public show() {}
-    public onViewLoaded(callback: (...args: any[]) => void) {}
-    public onViewVisible(callback: (...args: any[]) => void) {}
-    public onViewDisappeared(callback: (...args: any[]) => void) {}
-}

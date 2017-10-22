@@ -5,7 +5,7 @@ jest.mock("../index");
 jest.mock("../navigation");
 
 import { BaseController, IController } from "../controller";
-import { createController } from '../controllerfactory';
+import { createController } from "../controllerfactory";
 import Navigation from "../navigation";
 
 describe("Calatrava.BaseController", () => {
@@ -15,9 +15,25 @@ describe("Calatrava.BaseController", () => {
         mockController = createController(BaseController);
     });
 
-    it("#view should have native view set.", () => {
+    it("@lifeCycle should have native view set.", () => {
         expect(mockController).toBeInstanceOf(BaseController);
         expect(mockController.view).toBeDefined();
+    });
+
+    it("@lifeCycle on creation should hook to view's onViewLoaded", () => {
+        expect(mockController.view.onViewLoaded).toHaveBeenCalled();
+        expect(mockController.view.onViewLoaded)
+            .toHaveBeenCalledWith(mockController.onPageCreated);
+    });
+
+    it("@lifeCycle on creation should hook to view's onViewVisible", () => {
+        expect(mockController.view.onViewVisible).toHaveBeenCalled();
+    });
+
+    it("@lifeCycle on creation should hook to view's onViewDisappeared", () => {
+        expect(mockController.view.onViewDisappeared).toHaveBeenCalled();
+        expect(mockController.view.onViewDisappeared)
+            .toHaveBeenCalledWith(mockController.onFinish);
     });
 
     it("#getValues should resolve if view can provide values asked.",
@@ -40,6 +56,16 @@ describe("Calatrava.BaseController", () => {
             await expect(mockController.getValues(request))
                 .rejects.toMatch(response);
     });
+
+    it("#getValues should reject if view cannot provide valid JSON string.",
+    async () => {
+        const request = ["field1", "field2"];
+        const invalidJson = '{type: ""}';
+
+        mockController.view.getValues = resolvingFunc(invalidJson);
+        await expect(mockController.getValues(request))
+            .rejects.toBeInstanceOf(SyntaxError);
+});
 
     it("#render should resolve view to render if model present",
         async () => {
@@ -87,6 +113,7 @@ describe("Calatrava.BaseController", () => {
             await expect(mockController.renderComponent(name, model))
                 .rejects.toMatch(response);
     });
+
     it("#renderComponent should resolve if view is able to render a component",
         async () => {
             const name = "component";
@@ -97,6 +124,7 @@ describe("Calatrava.BaseController", () => {
                 .resolves.toBeTruthy();
             expect(mockController.view.renderComponent).toBeCalled();
     });
+
     it("#renderComponent should reject if view is unable to render a component",
         async () => {
             const name = "component";
@@ -108,11 +136,13 @@ describe("Calatrava.BaseController", () => {
                 .rejects.toMatch(errorResponse);
             expect(mockController.view.renderComponent).toBeCalled();
     });
+
     it("#display should call native view's show", () => {
         mockController.view.show = jest.fn();
         mockController.display();
         expect(mockController.view.show).toBeCalled();
     });
+
     it("#onFinish should call Navigation's back", () => {
         mockController.onFinish();
         expect(Navigation.back).toBeCalled();

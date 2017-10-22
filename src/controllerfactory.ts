@@ -4,12 +4,12 @@ import { NativeViewNotFoundError } from "./errors";
 import { Calatrava } from "./index";
 
 import { INativeView } from "./nativeview";
-export interface ControllerCreator<T extends IController> {
+export interface IControllerCreator<T extends IController> {
     new(view: INativeView, ...args: any[]): T;
 }
 
 export function createController<T extends IController>(
-    ctor: ControllerCreator<T>,
+    ctor: IControllerCreator<T>,
     ...args: any[]): T {
         const nativeView = Calatrava.NativePlatform.getPage(ctor.name);
         if ( !nativeView ) {

@@ -11,6 +11,7 @@ export class RouteRedefineError extends Error {
     }
 }
 
+// tslint:disable:max-classes-per-file
 export class RouteNotFoundError extends Error {
 
     private static makeMessage = (key: string) => {

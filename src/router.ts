@@ -10,12 +10,14 @@ class Route {
     constructor(public key: string, public controller: IControllerType) { }
 }
 
+// tslint:disable:max-classes-per-file
 export class Router {
     private static instance: Router;
     private routes: Route[];
     private constructor() {
         this.routes = [];
     }
+
     public static get Instance() {
         return this.instance || (this.instance = new this());
     }

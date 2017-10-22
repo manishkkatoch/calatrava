@@ -20,39 +20,39 @@ export class BaseController implements IController {
     public readonly view: INativeView;
     constructor(view: INativeView, ...args: any[]) {
         this.view = view;
+        // tslint:disable:no-console
+        this.view.onViewLoaded(this.onPageCreated);
+        this.view.onViewVisible(() => {
+            this.view.bindAll(this.onBind());
+            this.onPageVisible();
+        });
+        this.view.onViewDisappeared(this.onFinish);
     }
 
     public getValues(fields: string[]): Promise<string[]> {
         return makePromise((success: Success<string[]>, failure: Failure) => {
             const wrappedSuccess = (data: string): void => {
-                success(JSON.parse(data));
+                try {
+                    success(JSON.parse(data));
+                } catch (e) {
+                    failure(e);
+                }
             };
             this.view.getValues(fields, wrappedSuccess, failure );
         });
     }
     public render(model?: string): Promise<{}> {
-        const nullableModel = Optional.ofNullable(model);
-
-        if ( !nullableModel.isPresent() ) {
+        if ( typeof model === "undefined" ) {
             return Promise.reject("Model not present");
         }
-
-        return nullableModel
-                .map((m) => this.renderOnNativeView(m))
-                .get();
+        return this.renderOnNativeView(model);
     }
 
     public renderComponent(name: string, model?: string): Promise<{}> {
-        const nullableModel = Optional.ofNullable(model);
-
-        if ( !nullableModel.isPresent() ) {
+        if ( typeof model === "undefined" ) {
             return Promise.reject("Model not present");
         }
-
-        return nullableModel
-                .map((modelUnwrapped) =>
-                    this.renderComponentOnNativeView(name, modelUnwrapped))
-                .get();
+        return this.renderComponentOnNativeView(name, model);
     }
 
     public display() {
@@ -64,11 +64,9 @@ export class BaseController implements IController {
     public onFinish() {
         this.back();
     }
-    // tslint:disable-next-line:no-empty
+    // tslint:disable:no-empty
     public onPageCreated() { }
-    // tslint:disable-next-line:no-empty
     public onPageRestart() { }
-    // tslint:disable-next-line:no-empty
     public onPageVisible() { }
 
     private back() {
