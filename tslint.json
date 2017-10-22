@@ -5,9 +5,12 @@
     ],
     "jsRules": {},
     "rules": {
+        "no-console": false,
         "max-classes-per-file":false,
         "interface-name": false,
-        "object-literal-sort-keys": false
+        "object-literal-sort-keys": false,
+        "quotemark": false
+
     },
     "rulesDirectory": []
 }

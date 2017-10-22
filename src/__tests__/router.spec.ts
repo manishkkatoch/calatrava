@@ -1,9 +1,10 @@
+import {} from "jest";
 import { IController } from "../controller";
 import { RouteRedefineError } from "../errors";
 import { Router } from "../router";
 
-class TestController implements IController { }
-class AnotherTestController implements IController { }
+const TestController = jest.fn<IController>();
+const AnotherTestController = jest.fn<IController>();
 
 describe("Calatrava.Router", () => {
     let router: Router;

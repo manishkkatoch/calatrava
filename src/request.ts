@@ -1,5 +1,6 @@
 import Optional from "optional.js";
-import { createController, IController } from "./controller";
+import { IController } from "./controller";
+import { createController } from "./controllerfactory";
 import { RouteNotFoundError } from "./errors";
 import Navigation from "./navigation";
 import { IControllerType, Router } from "./router";
