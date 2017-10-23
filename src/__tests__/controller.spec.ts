@@ -1,24 +1,150 @@
-// tslint:disable-next-line:no-reference
-/// <reference path="./jasmine.matcher.d.ts" />
+import {} from "jest";
+import { rejectingFunc, resolvingFunc } from "./helper";
 
-import {} from "jasmine";
-import { createController, IController } from "../controller";
-import { customMatchers } from "./jasmine.matcher";
+jest.mock("../index");
+jest.mock("../navigation");
 
-class TestController implements IController {
-    public recievedArguments: any[];
-    constructor(...args: any[]) {
-        this.recievedArguments = args;
-    }
-}
+import { BaseController, IController } from "../controller";
+import { createController } from "../controllerfactory";
+import Navigation from "../navigation";
 
-describe("Calatava.Controller", () => {
+describe("Calatrava.BaseController", () => {
+    let mockController: IController;
+
     beforeEach(() => {
-        jasmine.addMatchers(customMatchers);
+        mockController = createController(BaseController);
     });
-    it("#createController should create instance of controller with given args",
-     () => {
-        const result = createController(TestController, {arg1: "1", arg2: "2"});
-        expect(result).toBeInstanceOf(TestController);
+
+    it("@lifeCycle should have native view set.", () => {
+        expect(mockController).toBeInstanceOf(BaseController);
+        expect(mockController.view).toBeDefined();
+    });
+
+    it("@lifeCycle on creation should hook to view's onViewLoaded", () => {
+        expect(mockController.view.onViewLoaded).toHaveBeenCalled();
+        expect(mockController.view.onViewLoaded)
+            .toHaveBeenCalledWith(mockController.onPageCreated);
+    });
+
+    it("@lifeCycle on creation should hook to view's onViewVisible", () => {
+        expect(mockController.view.onViewVisible).toHaveBeenCalled();
+    });
+
+    it("@lifeCycle on creation should hook to view's onViewDisappeared", () => {
+        expect(mockController.view.onViewDisappeared).toHaveBeenCalled();
+        expect(mockController.view.onViewDisappeared)
+            .toHaveBeenCalledWith(mockController.onFinish);
+    });
+
+    it("#getValues should resolve if view can provide values asked.",
+        async () => {
+            const request = ["field1", "field2"];
+            const response = ["value1", "value2"];
+
+            mockController.view.getValues = resolvingFunc(JSON.stringify(response));
+
+            await expect(mockController.getValues(request))
+                .resolves.toEqual(response);
+    });
+
+    it("#getValues should reject if view cannot provide values asked.",
+        async () => {
+            const request = ["field1", "field2"];
+            const response = "no values";
+
+            mockController.view.getValues = rejectingFunc(response);
+            await expect(mockController.getValues(request))
+                .rejects.toMatch(response);
+    });
+
+    it("#getValues should reject if view cannot provide valid JSON string.",
+    async () => {
+        const request = ["field1", "field2"];
+        const invalidJson = '{type: ""}';
+
+        mockController.view.getValues = resolvingFunc(invalidJson);
+        await expect(mockController.getValues(request))
+            .rejects.toBeInstanceOf(SyntaxError);
+});
+
+    it("#render should resolve view to render if model present",
+        async () => {
+            const model = { key: "value" };
+
+            mockController.view.render = resolvingFunc(true);
+            await expect(mockController.render(JSON.stringify(model)))
+                .resolves.toBeTruthy();
+    });
+
+    it("#render should reject if model is absent",
+        async () => {
+            const model = undefined;
+            const response = "Model not present";
+            mockController.view.render = resolvingFunc(true);
+            await expect(mockController.render(undefined))
+                .rejects.toMatch(response);
+    });
+    it("#render should resolve if view is able to render",
+        async () => {
+            const model = { key: "value" };
+
+            mockController.view.render = resolvingFunc(true);
+            await expect(mockController.render(JSON.stringify(model)))
+                .resolves.toBeTruthy();
+            expect(mockController.view.render).toBeCalled();
+    });
+    it("#render should reject if view is unable to render",
+        async () => {
+            const model = { key: "value" };
+            const errorResponse = "rendering error";
+
+            mockController.view.render = rejectingFunc(errorResponse);
+            await expect(mockController.render(JSON.stringify(model)))
+                .rejects.toMatch(errorResponse);
+            expect(mockController.view.render).toBeCalled();
+    });
+    it("#renderComponent should reject if model is absent",
+        async () => {
+            const name = "component";
+            const model = undefined;
+            const response = "Model not present";
+
+            mockController.view.renderComponent = resolvingFunc(true);
+            await expect(mockController.renderComponent(name, model))
+                .rejects.toMatch(response);
+    });
+
+    it("#renderComponent should resolve if view is able to render a component",
+        async () => {
+            const name = "component";
+            const model = { key: "value" };
+
+            mockController.view.renderComponent = resolvingFunc(true);
+            await expect(mockController.renderComponent(name, JSON.stringify(model)))
+                .resolves.toBeTruthy();
+            expect(mockController.view.renderComponent).toBeCalled();
+    });
+
+    it("#renderComponent should reject if view is unable to render a component",
+        async () => {
+            const name = "component";
+            const model = { key: "value" };
+            const errorResponse = "rendering error";
+
+            mockController.view.renderComponent = rejectingFunc(errorResponse);
+            await expect(mockController.renderComponent(name, JSON.stringify(model)))
+                .rejects.toMatch(errorResponse);
+            expect(mockController.view.renderComponent).toBeCalled();
+    });
+
+    it("#display should call native view's show", () => {
+        mockController.view.show = jest.fn();
+        mockController.display();
+        expect(mockController.view.show).toBeCalled();
+    });
+
+    it("#onFinish should call Navigation's back", () => {
+        mockController.onFinish();
+        expect(Navigation.back).toBeCalled();
     });
 });

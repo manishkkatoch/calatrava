@@ -1,15 +1,14 @@
-// tslint:disable-next-line:no-reference
-/// <reference path="./jasmine.matcher.d.ts" />
-
+import {} from "jasmine";
+import {} from "jest";
 import { IController } from "../controller";
 import { default as Navigation, NavigationStack } from "../navigation";
 
-class OneController implements IController { }
-class TwoController implements IController { }
+const OneController = jest.fn<IController>();
+const TwoController = jest.fn<IController>();
 
 describe("Calatrava.Navigation", () => {
-    let oneController: OneController;
-    let twoController: TwoController;
+    let oneController: IController;
+    let twoController: IController;
     beforeEach(() => {
         oneController = new OneController();
         twoController = new TwoController();
