@@ -1,6 +1,6 @@
 import Optional from "optional.js";
 import { CalatravaControllerCtor, IController } from "./controller";
-import { createController } from "./ControllerFactory";
+import { createController } from "./Controllerfactory";
 import { RouteRedefineError } from "./errors";
 import { INativeView } from "./nativeview";
 
