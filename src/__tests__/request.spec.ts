@@ -1,5 +1,5 @@
 import {} from "jest";
-import { IController } from "../controller";
+import { CalatravaControllerCtor, IController } from "../controller";
 import { RouteNotFoundError } from "../errors";
 import Navigation from "../navigation";
 import { Router } from "../router";
@@ -7,7 +7,7 @@ import { Router } from "../router";
 jest.mock("../index");
 import { Request } from "../request";
 
-const MockController = jest.fn<IController>();
+const mockControllerCtorFunction: CalatravaControllerCtor = jest.fn();
 
 describe("Calatrava.Request", () => {
     beforeEach(() => {
@@ -17,14 +17,14 @@ describe("Calatrava.Request", () => {
 
     it("#call should update navigation for found route",
     () => {
-        Router.Instance.add("key", MockController);
-        const result = Request("key");
-        expect(Navigation.top()).toBeInstanceOf(MockController);
+        Router.Instance.add("key1", mockControllerCtorFunction);
+        const result = Request("key1", []);
+        expect(Navigation.top()).toBeInstanceOf(mockControllerCtorFunction);
     });
 
-    it("#call should thow if no route for requested key", () => {
+    it("#call should throw RouteNotFoundError if no route for requested key", () => {
         expect(() => {
-            Request("someController");
+            Request("someController", []);
         })
         .toThrowError(RouteNotFoundError);
     });

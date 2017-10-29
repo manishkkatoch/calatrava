@@ -1,20 +1,15 @@
-import Optional from "optional.js";
-import { IController } from "./controller";
+import { CalatravaControllerCtor, IController } from "./controller";
 import { NativeViewNotFoundError } from "./errors";
 import { Calatrava } from "./index";
-
 import { INativeView } from "./nativeview";
-export interface IControllerCreator<T extends IController> {
-    new(view: INativeView, ...args: any[]): T;
-}
 
-export function createController<T extends IController>(
-    ctor: IControllerCreator<T>,
-    ...args: any[]): T {
-        const nativeView = Calatrava.NativePlatform.getPage(ctor.name);
+export function createController(
+    calatravaControllerCtor: CalatravaControllerCtor,
+    key: string,
+    ...args: any[]): IController {
+        const nativeView = Calatrava.NativePlatform.getPage(key);
         if ( !nativeView ) {
-            throw new NativeViewNotFoundError(ctor.name);
+            throw new NativeViewNotFoundError(key);
         }
-
-        return new ctor(nativeView, ...args);
+        return new calatravaControllerCtor(nativeView, args);
 }
