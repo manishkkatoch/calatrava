@@ -1,13 +1,13 @@
 import Optional from "optional.js";
-import { IController } from "./controller";
+import { CalatravaControllerCtor, IController } from "./controller";
+import { createController } from "./Controllerfactory";
 import { RouteRedefineError } from "./errors";
-// consider typed args
-export interface IControllerType {
-    new(...args: any[]): IController;
-}
+import { INativeView } from "./nativeview";
 
 class Route {
-    constructor(public key: string, public controller: IControllerType) { }
+    constructor(
+        public key: string,
+        public calatravaControllerCtor: CalatravaControllerCtor) { }
 }
 
 // tslint:disable:max-classes-per-file
@@ -34,17 +34,17 @@ export class Router {
         return this.getRoute(key).isPresent();
     }
 
-    public add(key: string, controllerType: IControllerType) {
+    public add(key: string, calatravaControllerCtor: CalatravaControllerCtor) {
         if (this.hasRoute(key)) {
             throw new RouteRedefineError(key);
         }
-        this.routes.push(new Route(key, controllerType));
+        this.routes.push(new Route(key, calatravaControllerCtor));
     }
 
-    public routeTo(key: string): Optional<IControllerType> {
+    public routeTo(key: string): Optional<CalatravaControllerCtor> {
         return Optional
             .ofNullable(this.routes.find((route) => route.key === key))
-            .map((route) => route.controller);
+            .map((route) => route.calatravaControllerCtor);
     }
 
     private getRoute(forKey: string): Optional<Route> {

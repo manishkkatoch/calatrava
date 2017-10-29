@@ -16,6 +16,8 @@ export interface IController {
     onPageVisible();
 }
 
+export type CalatravaControllerCtor = new (nativeView: INativeView, ...args: any[]) => IController;
+
 export class BaseController implements IController {
     public readonly view: INativeView;
     constructor(view: INativeView, ...args: any[]) {

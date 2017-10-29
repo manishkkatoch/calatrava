@@ -12,7 +12,7 @@ describe("Calatrava.BaseController", () => {
     let mockController: IController;
 
     beforeEach(() => {
-        mockController = createController(BaseController);
+        mockController = createController(BaseController, "mockController");
     });
 
     it("@lifeCycle should have native view set.", () => {
