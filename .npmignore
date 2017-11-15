@@ -1,0 +1,9 @@
+node_modules/**
+.vscode/**
+src/
+support/
+tsconfig.json
+tslint.json
+yarn.lock
+.travis.yml
+
